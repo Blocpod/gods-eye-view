@@ -33,11 +33,21 @@ try {
     `${process.env.QA_BASE_URL || 'http://127.0.0.1:4173'}/?welcome=1`,
     { waitUntil: 'domcontentloaded' },
   );
-  await page.waitForFunction(
-    () =>
+  await page.waitForFunction(() => {
+    const launcher = document.querySelector('#first-run-launcher');
+    return (
       window.__godsEyeView?.conflictTracker &&
-      !document.querySelector('#first-run-launcher').hidden,
-  );
+      launcher?.classList.contains('visible') &&
+      getComputedStyle(launcher).opacity === '1'
+    );
+  });
+  // Allow bounded imagery readiness so the introduction is captured over the actual globe.
+  await page
+    .waitForFunction(
+      () => window.__godsEyeView?.viewer?.scene?.globe?.tilesLoaded === true,
+      { timeout: 8000 },
+    )
+    .catch(() => {});
   await page.screenshot({ path: path.join(output, 'onboarding-desktop.png') });
   await page.click('[data-experience-conflicts]');
   await page.waitForFunction(

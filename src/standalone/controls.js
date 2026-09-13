@@ -1,5 +1,5 @@
 import { StyleManager } from '../ui.js';
-import { flyToAustin } from '../camera.js';
+import { showEarthOverview } from '../camera.js';
 import { initCockpitCloudEffects } from '../cockpitCloudEffects.js';
 
 /** Construct the existing controls and camera presentation. */
@@ -24,10 +24,10 @@ export function createStandaloneControls({
   const cockpitCloudEffects = initCockpitCloudEffects(viewer);
   defer(() => cockpitCloudEffects?.destroy());
 
-  // If no share link state, do default fly-to Austin
+  // Open on Earth; a shared link always keeps its saved camera.
   if (!styleManager.hasShareState) {
-    loaderStatus.textContent = 'Flying to Austin, TX...';
-    defer(flyToAustin(viewer));
+    loaderStatus.textContent = 'Bringing Earth into focus...';
+    showEarthOverview(viewer);
   } else {
     loaderStatus.textContent = 'Restoring shared view...';
   }

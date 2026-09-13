@@ -2,7 +2,7 @@ import * as Cesium from 'cesium';
 
 /**
  * Camera presets for notable locations.
- * Phase 1 default: fly to Austin, TX on load.
+ * Available at any time through the existing location controls.
  */
 export const CAMERA_PRESETS = {
   austin: {
@@ -79,4 +79,13 @@ export function flyToAustin(viewer) {
     clearTimeout(timer);
     if (!viewer.isDestroyed()) viewer.camera.cancelFlight();
   };
+}
+
+/** A still, global first view. Shared cameras bypass this initializer. */
+export function showEarthOverview(viewer) {
+  viewer.camera.setView({
+    destination: Cesium.Cartesian3.fromDegrees(18, 18, 19000000),
+    orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 },
+  });
+  viewer.scene.requestRender();
 }

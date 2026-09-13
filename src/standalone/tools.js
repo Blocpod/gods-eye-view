@@ -12,6 +12,7 @@ import {
 import { startStandaloneChrome } from './startupChrome.js';
 import { createConflictTracker } from '../conflicts/conflictTracker.js';
 import { createExperienceShell } from '../ui/experienceShell.js';
+import { createCommandPalette } from '../ui/commandPalette.js';
 
 /** Attach scene tools, rendering listeners and the standalone debug handle. */
 export function createStandaloneTools({
@@ -41,6 +42,9 @@ export function createStandaloneTools({
   });
   defer(() => conflictTracker.destroy());
   defer(createExperienceShell({ tracker: conflictTracker, signal }));
+  defer(
+    createCommandPalette({ tracker: conflictTracker, styleManager, signal }),
+  );
   const annotations = initAnnotations({ viewer, tileset, placeSearch });
   defer(() => {
     if (window.__gevAnnotations === annotations) delete window.__gevAnnotations;

@@ -17,12 +17,15 @@
   <header class="experience-header">
     <a class="experience-brand" href="#" aria-label="God's Eye View — explore the globe">
       <img src="/logo.svg" width="34" height="34" alt="" />
-      <span><span class="experience-brand-name">GOD'S EYE VIEW</span><span class="experience-brand-eyebrow">A broader perspective.</span></span>
+      <span><span class="experience-brand-name">God’s Eye View</span><span class="experience-brand-eyebrow">A broader perspective.</span></span>
     </a>
+    <div class="experience-navigation">
     <nav class="experience-mode-nav" aria-label="Intelligence modes">
       <button type="button" data-mode="explore" aria-pressed="true" disabled><span class="material-symbols-outlined" aria-hidden="true">public</span>Explore</button>
       <button type="button" data-mode="conflicts" aria-pressed="false" disabled><span class="material-symbols-outlined" aria-hidden="true">crisis_alert</span>Conflict Tracker</button>
     </nav>
+    <button class="experience-search-trigger" type="button" aria-label="Search places, tools and conflict briefings" aria-haspopup="dialog" disabled><span class="material-symbols-outlined" aria-hidden="true">search</span><span class="experience-search-label">Search</span><kbd>⌘K</kbd></button>
+    </div>
     <div class="experience-status"><span class="experience-status-dot" aria-hidden="true"></span><span class="experience-status-label">PUBLIC INTELLIGENCE</span><time class="experience-clock" aria-label="Current UTC time">--:-- UTC</time></div>
   </header>
   <div id="cesiumContainer"></div>
@@ -851,28 +854,24 @@
   <aside id="first-run-launcher" role="dialog" aria-labelledby="first-run-title" aria-describedby="first-run-description" hidden>
     <div class="first-run-scanline" aria-hidden="true"></div>
     <header class="first-run-header">
-      <span class="first-run-kicker">MISSION CONTROL · FIRST LAUNCH</span>
+      <span class="first-run-kicker">A NEW PERSPECTIVE</span>
     </header>
-    <h2 id="first-run-title">Choose your first view</h2>
-    <!-- The card's one persuasive line, owner-authored and VERBATIM (2026-08-23)
-         — including the unspaced em dash. The arc it has to carry: this looks
-         like something you should not have access to → the sources are all
-         public → the data is real. Tile subcopy stays purely functional. -->
-    <p id="first-run-description">It feels like a forbidden cockpit—then you realize the sources are public and the data is real.</p>
+    <h2 id="first-run-title">Your world.<br>In focus.</h2>
+    <p id="first-run-description">Explore live signals, orbital missions and the events shaping our planet. All from public sources.</p>
     <div class="first-run-choices">
       <button type="button" data-experience-conflicts>
         <span class="material-symbols-outlined" aria-hidden="true">crisis_alert</span>
-        <span><strong>CONFLICT TRACKER</strong><small>Explore conflict zones and sourced situation reports</small></span>
+        <span><strong>Conflict Tracker</strong><small>Explore conflict zones and sourced situation reports</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" data-first-run-choice="contacts">
         <span class="material-symbols-outlined" aria-hidden="true">radar</span>
-        <span><strong>LIVE CONTACTS</strong><small>Aircraft, vessels and nearby intelligence</small></span>
+        <span><strong>Live contacts</strong><small>Aircraft, vessels and nearby intelligence</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" data-first-run-choice="space-missions">
         <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
-        <span><strong>SPACE MISSIONS</strong><small>Launches, spacecraft and orbital context</small></span>
+        <span><strong>Space missions</strong><small>Launches, spacecraft and orbital context</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" data-first-run-choice="environmental">
@@ -881,12 +880,12 @@
         <!-- Subcopy names BOTH feeds this tile turns on, because the launcher
              optimizes for the fully configured experience (owner ruling,
              2026-08-23) — see the mission table in src/firstRunExperience.js. -->
-        <span><strong data-first-run-environmental-title>ENVIRONMENTAL</strong><small>Live earthquakes and active fires, from USGS and NASA</small></span>
+        <span><strong data-first-run-environmental-title>Environment</strong><small>Live earthquakes and active fires, from USGS and NASA</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" class="first-run-explore" data-first-run-choice="explore">
         <span class="material-symbols-outlined" aria-hidden="true">public</span>
-        <span><strong>EXPLORE MANUALLY</strong><small>Begin with a clean globe</small></span>
+        <span><strong>Explore the globe</strong><small>Begin with a clean globe</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
     </div>

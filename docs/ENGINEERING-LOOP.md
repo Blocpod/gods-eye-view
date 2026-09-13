@@ -4,7 +4,9 @@
 
 The visitor should feel composed situational awareness as they move from the global picture to a sourced local briefing, because God's Eye View makes public information explorable in context.
 
-Preserve every existing capability. Add Conflict Tracker as a separate mode, with a visible return to Explore. The spatial metaphor is an observatory: the globe is the principal interaction surface, the directory provides orientation, and a situation report provides depth. Use restrained motion and readable editorial hierarchy rather than additional decorative effects.
+Preserve every existing capability. Add Conflict Tracker as a separate mode, with a visible return to Explore. The globe is the principal interaction surface, the directory provides orientation, and a situation report provides depth. Use restrained motion and readable editorial hierarchy rather than additional decorative effects.
+
+The user's second-pass mandate is a substantial design improvement informed by Apple and SpaceX. It supersedes the earlier first-run copy and visual styling. The working hypothesis is that a full-Earth default, the headline **Your world. In focus.**, legible graphite surfaces and a searchable **Cmd/Ctrl+K** command palette will communicate scope and capability with less simultaneous chrome. Explicit shared camera destinations take precedence over the new default.
 
 ## Research and adaptation
 
@@ -16,9 +18,14 @@ Karpathy's published [autoresearch](https://github.com/karpathy/autoresearch) an
 4. Keep improvements that preserve existing behavior. Fix or remove unsuccessful changes without resetting another agent's work.
 5. Record evidence and remaining limitations. Repeat against the same acceptance criteria.
 
+The second pass applies Apple's primary guidance on [layout](https://developer.apple.com/design/human-interface-guidelines/layout) and [typography](https://developer.apple.com/design/human-interface-guidelines/typography): meaningful hierarchy, aligned groups, adaptable layouts and readable text. The [SpaceX Dragon page](https://new.spacex.com/vehicles/dragon) supplies a structural reference for progressing from a clear subject to subsystem detail and concise technical facts. These references inform hypotheses; they do not establish equivalent quality or replace screenshot and interaction review.
+
 ## Acceptance criteria
 
 - All original controls and capabilities remain accessible in Explore.
+- Startup frames the full Earth unless an explicit shared camera takes precedence.
+- First-run text stays readable against the real map, with a clear primary action and accessible secondary choices.
+- Cmd/Ctrl+K opens a searchable command palette for tools and conflict briefings. Keyboard navigation, action execution, Escape and focus restoration work without interfering with ordinary text input.
 - Conflict Tracker has an explicit mode switch and first-run entry.
 - Mapped representative locations and the keyboard-accessible directory open the same SITREP.
 - Search, region filters, empty results, report dismissal, and return to Explore work.
@@ -29,11 +36,13 @@ Karpathy's published [autoresearch](https://github.com/karpathy/autoresearch) an
 
 ## Experiment record
 
-| Experiment                  | Hypothesis                                                                                            | Evidence / decision                                                                                                                                                                         |
-| --------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Baseline, `795ed68`         | Existing app is functional but has weak hierarchy and dense cyan HUD styling.                         | Browser loaded without uncaught errors; screenshot captured. Node 24 suite: 3,086 passed, 2 failed, 1 skipped. Both failures involve macOS `/var` vs `/private/var` temporary path aliases. |
-| Additive navigation         | Persistent Explore / Conflict Tracker navigation makes task selection legible without removing tools. | Implementation and browser verification recorded in the final review.                                                                                                                       |
-| Conflict directory + SITREP | A searchable, sourced directory makes map locations understandable and keyboard accessible.           | Catalog integrity tests and map/list interaction checks recorded in the final review.                                                                                                       |
-| Observatory visual system   | Warm typography, restrained color, deliberate alignment and responsive panels improve legibility.     | Desktop/mobile screenshots and critical-failure review recorded in the final review.                                                                                                        |
+| Experiment                  | Hypothesis                                                                                             | Evidence / decision                                                                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Baseline, `795ed68`         | Existing app is functional but has weak hierarchy and dense cyan HUD styling.                          | Browser loaded without uncaught errors; screenshot captured. Node 24 suite: 3,086 passed, 2 failed, 1 skipped. Both failures involve macOS `/var` vs `/private/var` temporary path aliases. |
+| Additive navigation         | Persistent Explore / Conflict Tracker navigation makes task selection legible without removing tools.  | Implementation and browser verification recorded in the final review.                                                                                                                       |
+| Conflict directory + SITREP | A searchable, sourced directory makes map locations understandable and keyboard accessible.            | Catalog integrity tests and map/list interaction checks recorded in the final review.                                                                                                       |
+| Observatory visual system   | Warm typography, restrained color, deliberate alignment and responsive panels improve legibility.      | Desktop/mobile screenshots and critical-failure review recorded in the final review.                                                                                                        |
+| Second-pass composition     | Full Earth, stronger type and controlled graphite surfaces establish a clearer visual subject.         | Kept after desktop/mobile screenshot review; 82 original UI and 29 Conflict Tracker browser checks pass.                                                                                    |
+| Searchable commands         | Cmd/Ctrl+K makes the existing tool set and conflict briefings discoverable with less permanent chrome. | Kept after 16 browser checks; corrected IME handling, exclusive-mode guards and place submission during review.                                                                             |
 
-The final review records actual checks; an award or a “10×” result is not a measurable claim established by this loop.
+The review distinguishes first-pass checks from second-pass verification. Keep an iteration only after inspecting its rendered result and testing affected journeys; prior passing tests do not validate later edits. An award or a “10×” result is not a measurable claim established by this loop.

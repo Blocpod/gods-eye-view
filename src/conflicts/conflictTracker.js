@@ -20,9 +20,9 @@ import {
 import './conflictTracker.css';
 
 const SEVERITY_COLORS = {
-  critical: '#ff715c',
+  critical: '#ff8278',
   high: '#e9b676',
-  elevated: '#d9e68a',
+  elevated: '#a8d8ff',
 };
 const escapeHtml = (value) =>
   String(value ?? '').replace(
@@ -77,10 +77,10 @@ export function createConflictTracker({
   root.innerHTML = `
     <aside class="conflict-directory" aria-labelledby="${instanceId}-title">
       <div class="conflict-directory__heading">
-        <div class="conflict-eyebrow"><span class="conflict-square"></span> Global watch</div>
-        <h2 id="${instanceId}-title">Conflict<br><span>Tracker.</span></h2>
-        <p class="conflict-intro">The fault lines of our world.<br>Context behind every coordinate.</p>
-        <div class="conflict-tally"><strong>${CONFLICT_ZONES.length.toString().padStart(2, '0')}</strong><span>curated briefings<br><span class="conflict-muted">Open-source reference</span></span></div>
+        <div class="conflict-eyebrow"><span class="conflict-square"></span> Global intelligence</div>
+        <h2 id="${instanceId}-title">Conflict Tracker</h2>
+        <p class="conflict-intro">Context for a changing world.</p>
+        <div class="conflict-tally"><span><strong>${CONFLICT_ZONES.length.toString().padStart(2, '0')}</strong> briefings</span><span class="conflict-tally__separator" aria-hidden="true"></span><span class="conflict-muted">Curated reference</span></div>
       </div>
       <div class="conflict-directory__filters">
         <label class="conflict-search"><span class="conflict-search__icon" aria-hidden="true">⌕</span><input type="search" aria-label="Search conflict briefings" placeholder="Search a location or topic" autocomplete="off" spellcheck="false"><span class="conflict-search__hint" aria-hidden="true">↵</span></label>
