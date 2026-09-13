@@ -10,6 +10,10 @@ import {
   releaseContinuousRender,
 } from '../renderGovernor.js';
 import { startStandaloneChrome } from './startupChrome.js';
+import { createConflictTracker } from '../conflicts/conflictTracker.js';
+import { createExperienceShell } from '../ui/experienceShell.js';
+import { createCommandPalette } from '../ui/commandPalette.js';
+import { installSolarRefresh } from './solarRefresh.js';
 
 /** Attach scene tools, rendering listeners and the standalone debug handle. */
 export function createStandaloneTools({
@@ -26,6 +30,22 @@ export function createStandaloneTools({
   const { dataManager } = data;
   const sceneDirector = new SceneDirector(viewer, styleManager, dataManager);
   defer(() => sceneDirector.destroy());
+  const conflictTracker = createConflictTracker({
+    viewer,
+    beforeActivate: () => {
+      sceneDirector.interrupt('Conflict Tracker opened');
+      return true;
+    },
+    navigate: (move) =>
+      styleManager.runImmediateNavigation('conflict zone', move),
+    onActiveChange: () =>
+      window.dispatchEvent(new Event('gev:conflict-mode-change')),
+  });
+  defer(() => conflictTracker.destroy());
+  defer(createExperienceShell({ tracker: conflictTracker, signal }));
+  defer(
+    createCommandPalette({ tracker: conflictTracker, styleManager, signal }),
+  );
   const annotations = initAnnotations({ viewer, tileset, placeSearch });
   defer(() => {
     if (window.__gevAnnotations === annotations) delete window.__gevAnnotations;
@@ -38,6 +58,7 @@ export function createStandaloneTools({
   // nothing animates per frame. Installed AFTER every module above has had
   // its chance to register pre-install holds. (perf wave 2)
   installRenderGovernor(viewer);
+  defer(installSolarRefresh({ viewer, documentRef: document }));
 
   // Install the explicit scope mask used by the DISPLAY controls.
   installScopeMask(viewer);
@@ -93,6 +114,7 @@ export function createStandaloneTools({
     weatherEffects,
     cockpitCloudEffects,
     getRenderGovernorDiagnostics,
+    conflictTracker,
     requestRender: governorRequestRender,
   };
   const debug = window.__godsEyeView;
@@ -113,5 +135,5 @@ export function createStandaloneTools({
       delete window.__gevVoiceCommands;
   });
   debug.voiceCommands = voiceCommands;
-  return { sceneDirector, annotations, voiceCommands };
+  return { sceneDirector, annotations, voiceCommands, conflictTracker };
 }

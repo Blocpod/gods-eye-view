@@ -43,6 +43,9 @@
     "test": "node scripts/run-unit-tests.mjs",
     "test:track": "node scripts/track-regression.mjs",
     "qa:map-source-tray": "node scripts/qa-map-source-tray.mjs",
+    "qa:conflict-tracker": "node scripts/qa-conflict-tracker.mjs",
+    "qa:command-palette": "node scripts/qa-command-palette.mjs",
+    "qa:solar-lighting": "node scripts/qa-solar-lighting.mjs",
     "check:boundaries": "node scripts/check-package-boundaries.mjs"
   },
   "dependencies": {

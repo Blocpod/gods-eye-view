@@ -1,0 +1,1641 @@
+/* Observatory design system. Loaded after the legacy instrument styles.
+ * Chrome is deliberately separate from Cesium and sensor rendering: this file
+ * does not change scene effects, target colors, feed states, or panel behavior.
+ */
+:root {
+  color-scheme: dark;
+  --experience-ink: #06080b;
+  --experience-surface: #15191f;
+  --experience-paper: #f5f7fa;
+  --experience-muted: #a5acb7;
+  --experience-faint: #8b94a2;
+  --experience-accent: #a8d8ff;
+  --experience-line: rgba(225, 232, 245, 0.15);
+  --experience-header-height: 80px;
+  --experience-gutter: 28px;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+  --bg-dark: var(--experience-ink);
+  --glass-bg: rgba(16, 20, 27, 0.94);
+  --glass-border: var(--experience-line);
+  --glass-border-hover: rgba(225, 232, 245, 0.32);
+  --accent: var(--experience-accent);
+  --accent-dim: rgba(168, 216, 255, 0.1);
+  --accent-glow: rgba(168, 216, 255, 0.12);
+  --text-primary: var(--experience-paper);
+  --text-secondary: var(--experience-muted);
+  --text-dim: var(--experience-faint);
+  --panel-radius: 18px;
+  --btn-radius: 8px;
+  --left-stack-x: var(--experience-gutter);
+  --right-rail-x: var(--experience-gutter);
+  --left-stack-top: 112px;
+  --left-collapsed-width: 188px;
+  --transition-fast: 160ms ease;
+  --transition-smooth: 260ms cubic-bezier(0.22, 0.68, 0, 1);
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+button,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  touch-action: manipulation;
+}
+::selection {
+  background: var(--experience-accent);
+  color: var(--experience-ink);
+}
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--experience-accent) !important;
+  outline-offset: 3px;
+}
+
+/* A stable navigation spine leaves the planet as the primary canvas. */
+.experience-header {
+  position: fixed;
+  z-index: 150;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--experience-header-height);
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
+  align-items: center;
+  gap: 28px;
+  padding: 0 var(--experience-gutter);
+  background: rgba(13, 17, 23, 0.96);
+  border-bottom: 1px solid var(--experience-line);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.experience-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: var(--experience-paper);
+  text-decoration: none;
+}
+.experience-brand > img,
+.experience-brand .brand-logo,
+.experience-brand-mark {
+  display: block;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.8);
+}
+.experience-brand-name,
+.experience-brand strong {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.65px;
+  line-height: 1.2;
+}
+.experience-brand-eyebrow,
+.experience-brand small {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 2.4px;
+  color: var(--experience-faint);
+  text-transform: uppercase;
+}
+.experience-mode-nav {
+  display: flex;
+  align-self: stretch;
+  align-items: stretch;
+  gap: 26px;
+}
+.experience-mode-nav button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 1px;
+  border: 0;
+  border-radius: 0;
+  color: var(--experience-muted);
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.experience-mode-nav button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--experience-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition-smooth);
+}
+.experience-mode-nav button:hover {
+  color: var(--experience-paper);
+}
+.experience-mode-nav
+  button:is(.active, [aria-selected='true'], [aria-pressed='true']) {
+  color: var(--experience-accent);
+}
+.experience-mode-nav
+  button:is(.active, [aria-selected='true'], [aria-pressed='true'])::after {
+  transform: scaleX(1);
+}
+.experience-mode-nav .material-symbols-outlined {
+  font-size: 17px;
+}
+.experience-mode-count {
+  padding: 2px 5px;
+  border: 1px solid var(--experience-line);
+  border-radius: 3px;
+  color: var(--experience-muted);
+  font: 9px var(--font-mono);
+}
+.experience-status {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--experience-muted);
+  font: 9px var(--font-mono);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.experience-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--experience-accent);
+  box-shadow: 0 0 0 4px rgba(168, 216, 255, 0.07);
+}
+.experience-clock {
+  margin-left: 16px;
+  color: var(--experience-paper);
+}
+body:has(.experience-header) #title-bar,
+body.experience-ready #title-bar {
+  display: none;
+}
+
+/* Peripheral controls remain visually quiet until needed. */
+body:not(.cockpit-mode) #style-indicator {
+  top: auto;
+  right: var(--experience-gutter);
+  bottom: 31px;
+  text-align: right;
+}
+#style-indicator .indicator-label {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  color: var(--experience-faint);
+}
+#style-indicator .indicator-value {
+  margin-top: 5px;
+  color: var(--experience-paper);
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  text-shadow: none;
+}
+body:not(.cockpit-mode):has(#key-setup-chip:not([hidden])) #style-indicator {
+  bottom: 64px;
+}
+body:not(.cockpit-mode) #top-center-actions {
+  top: calc(var(--experience-header-height) + 24px);
+  left: 50%;
+  gap: 0;
+  padding: 3px;
+  border: 1px solid var(--experience-line);
+  border-radius: 5px;
+  background: var(--glass-bg);
+}
+#top-center-actions button {
+  width: 38px;
+  height: 34px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--experience-muted);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+#top-center-actions button + button {
+  border-left: 1px solid var(--experience-line);
+  border-radius: 0;
+}
+#top-center-actions button:hover,
+#top-center-actions button:focus-visible {
+  background: var(--accent-dim);
+  color: var(--experience-accent);
+  transform: none;
+}
+#top-center-actions .share-icon {
+  font-size: 15px;
+  filter: grayscale(1);
+}
+#global-loading-status {
+  top: calc(var(--experience-header-height) + 76px);
+  border-radius: 4px;
+  color: var(--experience-muted);
+  background: var(--glass-bg);
+}
+#global-loading-label {
+  color: var(--experience-accent);
+}
+#toast {
+  border-radius: 4px;
+  background: var(--experience-surface);
+  border-color: var(--experience-line);
+  color: var(--experience-paper);
+  box-shadow: 0 12px 40px #0005;
+}
+#left-panel-stack {
+  top: max(
+    calc(var(--experience-header-height) + 24px),
+    var(--left-stack-safe-top, 112px)
+  );
+  gap: 9px;
+}
+#right-context-rail {
+  top: max(
+    calc(var(--experience-header-height) + 24px),
+    var(--right-stack-safe-top, 112px)
+  );
+  gap: 9px;
+}
+/* Rotated edge telemetry lives outside the control gutters. Its transformed
+ * bounds are real obstacles to the rail allocator; placing it in the gutter
+ * would incorrectly reduce a tall Data Layers panel to a zero-height lane.
+ */
+.hud-left-edge {
+  left: max(0px, calc(var(--experience-gutter) - 22px));
+}
+.hud-right-edge {
+  right: max(0px, calc(var(--experience-gutter) - 22px));
+}
+
+/* Consistent panel materials; instrument-specific active/error colors survive. */
+:is(
+  .panel-inner,
+  .data-panel-inner,
+  .cctv-panel-inner,
+  .scene-panel-inner,
+  .global-context-panel-inner,
+  .location-inner
+) {
+  background: var(--glass-bg);
+  border-color: var(--experience-line);
+  border-radius: var(--panel-radius);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+:is(
+    #control-panel,
+    #location-bar,
+    #data-panel,
+    #scene-panel,
+    #cctv-panel,
+    #global-context-panel
+  )
+  > .panel-glow {
+  display: none;
+}
+.panel-header {
+  gap: 12px;
+}
+.panel-title,
+:is(#data-panel, #cctv-panel, #scene-panel, #global-context-panel).collapsed
+  .panel-title,
+.pp-header-label {
+  color: var(--experience-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 1.7px;
+}
+.panel-divider,
+#left-panel-stack > [data-panel-id]:not(.collapsed) .panel-divider,
+#right-context-rail [data-panel-id]:not(.collapsed) .panel-divider {
+  background: var(--experience-line);
+  box-shadow: none;
+}
+.panel-collapse-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--experience-muted);
+}
+.panel-collapse-btn:hover {
+  color: var(--experience-accent);
+  border-color: var(--experience-line);
+  background: var(--accent-dim);
+}
+.data-toggle-row {
+  padding: 11px 6px 10px;
+  border-bottom: 1px solid rgba(225, 232, 245, 0.07);
+  border-radius: 0;
+}
+.data-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--experience-paper);
+}
+.data-count {
+  color: var(--experience-muted);
+  font-variant-numeric: tabular-nums;
+}
+.data-toggle-meta {
+  color: var(--experience-faint);
+  font-size: 9px;
+  line-height: 1.5;
+}
+.data-toggle-btn {
+  border-radius: 3px;
+  min-height: 28px;
+}
+.data-toggle-btn.active:not(.feed-stale):not(.feed-fallback):not(
+    .feed-degraded
+  ):not(.feed-unavailable) {
+  color: var(--experience-accent);
+  background: var(--accent-dim);
+  border-color: rgba(168, 216, 255, 0.35);
+  box-shadow: none;
+}
+.data-toggle-list,
+.first-run-choices,
+.key-setup-rows {
+  scrollbar-color: #596372 transparent;
+}
+.data-toggle-list::-webkit-scrollbar-thumb,
+.first-run-choices::-webkit-scrollbar-thumb,
+.key-setup-rows::-webkit-scrollbar-thumb {
+  background: #596372;
+}
+.data-toggle-chip {
+  border-radius: 3px;
+}
+.pp-toggle-btn,
+.context-mode-button,
+.panel-layer-toggle,
+.scene-btn {
+  border-radius: 3px;
+}
+.pp-toggle-btn:not(.active),
+.context-mode-button:not(.active) {
+  color: var(--experience-muted);
+}
+.panel-layer-toggle.active {
+  color: var(--experience-accent);
+  border-color: rgba(168, 216, 255, 0.35);
+  background: var(--accent-dim);
+  box-shadow: none;
+}
+
+/* The bottom command dock reads as a single precision instrument. */
+#command-dock {
+  bottom: max(24px, env(safe-area-inset-bottom));
+}
+#command-dock > :is(#location-bar, #control-panel) {
+  background: var(--glass-bg);
+  border-color: var(--experience-line);
+  box-shadow: none;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+#command-dock #location-bar .location-toolbar-label,
+#command-dock #control-panel .panel-title {
+  color: var(--experience-muted);
+  letter-spacing: 1.3px;
+}
+#command-dock > :is(#location-bar, #control-panel).dock-pinned {
+  border-color: rgba(168, 216, 255, 0.4);
+  box-shadow: none;
+}
+#command-dock .dock-popover-content {
+  background: rgba(16, 20, 27, 0.98);
+  border-color: var(--experience-line);
+  border-radius: 6px;
+  box-shadow: 0 18px 50px #0007;
+}
+#command-dock .style-btn {
+  border-radius: 4px;
+}
+.style-btn.active {
+  background: var(--accent-dim);
+  border-color: rgba(168, 216, 255, 0.5);
+  box-shadow: none;
+}
+.style-btn.active .btn-icon {
+  text-shadow: none;
+}
+.btn-label {
+  font-size: 11px;
+}
+.location-pill,
+.poi-pill {
+  border-radius: 3px;
+}
+.location-pill.active,
+.poi-pill.active {
+  background: var(--accent-dim);
+  border-color: rgba(168, 216, 255, 0.4);
+  box-shadow: none;
+}
+.location-mini-city {
+  color: var(--experience-paper);
+}
+.panel-mini-value {
+  color: var(--experience-accent);
+  text-shadow: none;
+}
+#command-dock .gev-mic-orbit {
+  border-color: #8b9eb8;
+  background: #b2d6ff08;
+  box-shadow: none;
+}
+#command-dock #gev-voice-button:hover .gev-mic-orbit {
+  border-color: var(--experience-accent);
+  background: var(--accent-dim);
+  box-shadow: none;
+}
+
+/* First launch is a concise editorial invitation, with the globe still visible. */
+#first-run-launcher,
+#key-setup {
+  background: rgba(18, 23, 31, 0.98);
+  border: 1px solid rgba(225, 232, 245, 0.23);
+  border-radius: 8px;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+#first-run-launcher {
+  width: min(510px, calc(100vw - 40px));
+  padding: 28px;
+  max-height: calc(100dvh - 112px);
+}
+.first-run-scanline,
+.key-setup-scanline {
+  height: 2px;
+  background: var(--experience-accent);
+  box-shadow: none;
+}
+.first-run-kicker,
+.key-setup-kicker {
+  color: var(--experience-accent);
+  font-size: 8px;
+  letter-spacing: 1.7px;
+}
+#first-run-launcher h2,
+#key-setup h2 {
+  margin-top: 16px;
+  color: var(--experience-paper);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 400;
+  letter-spacing: -1.6px;
+  line-height: 1.08;
+}
+#first-run-description,
+#key-setup-description {
+  margin-top: 13px;
+  color: var(--experience-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.first-run-choices {
+  gap: 0;
+  margin-top: 24px;
+  scrollbar-gutter: auto;
+}
+.first-run-choices button,
+.first-run-choices button.first-run-explore {
+  grid-template-columns: 25px 1fr 18px;
+  min-height: 67px;
+  gap: 14px;
+  padding: 13px 4px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--experience-line);
+  border-radius: 0;
+  color: var(--experience-paper);
+}
+.first-run-choices button:hover,
+.first-run-choices button:focus-visible {
+  background: var(--accent-dim);
+  border-color: var(--experience-line);
+  transform: none;
+}
+.first-run-choices button:focus-visible {
+  outline-offset: -3px;
+}
+.first-run-choices button > .material-symbols-outlined:first-child,
+.first-run-arrow,
+.first-run-choices button:hover .first-run-arrow {
+  color: var(--experience-accent);
+}
+.first-run-choices strong {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+.first-run-choices small {
+  margin-top: 3px;
+  color: var(--experience-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.first-run-footer {
+  padding-top: 17px;
+  margin-top: 8px;
+  border-top: 1px solid var(--experience-line);
+}
+.first-run-suppress {
+  color: var(--experience-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.first-run-suppress input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--experience-accent);
+}
+.first-run-note,
+.key-setup-note {
+  color: var(--experience-faint);
+  font-size: 9px;
+  line-height: 1.6;
+}
+.key-setup-row {
+  background: #ffffff03;
+  border-color: var(--experience-line);
+}
+.key-setup-get {
+  color: var(--experience-accent);
+}
+.key-setup-apply {
+  background: var(--experience-accent);
+  color: var(--experience-ink);
+  border-radius: 3px;
+  min-height: 38px;
+}
+#key-setup-chip {
+  color: var(--experience-muted);
+  background: var(--glass-bg);
+  border-color: var(--experience-line);
+  border-radius: 4px;
+  box-shadow: none;
+}
+#key-setup-chip:hover {
+  color: var(--experience-accent);
+  border-color: rgba(168, 216, 255, 0.4);
+  box-shadow: none;
+}
+
+#loading-screen {
+  background: #06080b;
+}
+.loader-content {
+  max-width: calc(100vw - 40px);
+}
+.loader-logo {
+  width: 78px;
+  filter: grayscale(1) brightness(1.5);
+  animation: none;
+  opacity: 0.8;
+}
+.loader-content h2 {
+  font-family: var(--font-sans);
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+}
+.loader-content .title-accent {
+  color: var(--experience-accent);
+}
+.loader-status {
+  margin-top: 20px;
+  color: var(--experience-muted);
+  font-size: 9px;
+  letter-spacing: 1.3px;
+  animation: none;
+}
+
+/* Optical telemetry is an annotation system, not a glowing scene effect.
+ * Sensor presets keep their intentional instrument colors and typography.
+ */
+html:is(
+    [data-gev-style='normal'],
+    [data-gev-style='noir'],
+    [data-gev-style='anime'],
+    [data-gev-style='snow']
+  )
+  #intel-hud {
+  --hud-color: #abb7c6 !important;
+  --hud-glow: transparent !important;
+  --hud-border: rgba(225, 232, 245, 0.15) !important;
+}
+html[data-gev-style='normal'] #intel-hud * {
+  text-shadow: none;
+  line-height: 1.7;
+}
+html[data-gev-style='normal'] #intel-hud .hud-content {
+  font-size: 10px;
+  letter-spacing: 0.9px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-classification {
+  color: var(--experience-faint);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-system {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-mode {
+  color: var(--experience-paper);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-summary-label {
+  color: var(--experience-faint);
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  opacity: 1;
+}
+html[data-gev-style='normal'] #intel-hud .hud-summary {
+  max-width: 290px;
+  font-size: 9px;
+  letter-spacing: 0.4px;
+  white-space: normal;
+}
+html[data-gev-style='normal'] #intel-hud .hud-rec,
+html[data-gev-style='normal'] #intel-hud .hud-orbital {
+  font-size: 9px;
+  letter-spacing: 0.8px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-edge {
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+html[data-gev-style='normal'] #intel-hud .hud-bracket {
+  color: var(--experience-accent);
+  font-size: 15px;
+  opacity: 0.6;
+}
+html[data-gev-style='normal'] #intel-hud :is(.hud-top-left, .hud-top-right) {
+  top: calc(var(--experience-header-height) + 24px);
+}
+html[data-gev-style='normal'] #intel-hud :is(.hud-top-left, .hud-bottom-left) {
+  left: var(--experience-gutter);
+}
+html[data-gev-style='normal']
+  #intel-hud
+  :is(.hud-top-right, .hud-bottom-right) {
+  right: var(--experience-gutter);
+}
+html[data-gev-style='normal'] #intel-hud[data-variant='operator'] .hud-corner {
+  background: var(--glass-bg);
+  border-color: var(--experience-line);
+  border-radius: 4px;
+}
+html[data-gev-style='normal'] #intel-hud[data-variant='operator'] .hud-top-bar {
+  top: calc(var(--experience-header-height) + 78px);
+  background: var(--glass-bg);
+  border-color: var(--experience-line);
+  box-shadow: none;
+}
+
+/* Dedicated surfaces retain their own composition. */
+body:is(.ui-clean-view, .recording-mode, .cockpit-mode) .experience-header {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --experience-gutter: 20px;
+  }
+  .experience-header {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+  }
+  .experience-status-label {
+    display: none;
+  }
+  .experience-clock {
+    margin-left: 4px;
+  }
+  .experience-brand strong,
+  .experience-brand-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --experience-gutter: 14px;
+    --experience-header-height: 104px;
+    --left-collapsed-width: 154px;
+  }
+  .experience-header {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 58px 46px;
+    gap: 0 12px;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .experience-brand {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 9px;
+  }
+  .experience-brand > img,
+  .experience-brand .brand-logo,
+  .experience-brand-mark {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+  .experience-brand-eyebrow,
+  .experience-brand small {
+    font-size: 7px;
+    letter-spacing: 1.6px;
+    margin-top: 3px;
+  }
+  .experience-status {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 8px;
+    letter-spacing: 0.3px;
+  }
+  .experience-mode-nav {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    gap: 28px;
+  }
+  .experience-mode-nav button {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  body:not(.cockpit-mode) #top-center-actions {
+    top: calc(var(--experience-header-height) + 12px);
+    left: 50%;
+  }
+  #top-center-actions button {
+    width: 32px;
+    height: 32px;
+  }
+  #left-panel-stack {
+    top: max(
+      calc(var(--experience-header-height) + 64px),
+      var(--left-stack-safe-top, 172px)
+    );
+  }
+  #right-context-rail {
+    top: max(
+      calc(var(--experience-header-height) + 64px),
+      var(--right-stack-safe-top, 172px)
+    );
+  }
+  #left-panel-stack .panel-title,
+  #right-context-rail .panel-title,
+  .pp-header-label {
+    letter-spacing: 1px;
+  }
+  #first-run-launcher {
+    width: calc(100vw - 28px);
+    max-height: calc(100dvh - 140px);
+    padding: 23px;
+    top: 53%;
+  }
+  #first-run-launcher h2 {
+    font-size: 32px;
+  }
+  #first-run-description {
+    font-size: 11px;
+  }
+  .first-run-choices {
+    margin-top: 17px;
+  }
+  .first-run-choices button {
+    min-height: 65px;
+  }
+  #command-dock {
+    bottom: max(18px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 28px);
+  }
+  body:not(.cockpit-mode) #style-indicator {
+    bottom: 102px;
+  }
+  body:not(.cockpit-mode):has(#key-setup-chip:not([hidden])) #style-indicator {
+    bottom: 137px;
+  }
+  #global-loading-status {
+    top: calc(var(--experience-header-height) + 53px);
+    max-width: calc(100vw - 28px);
+  }
+  html[data-gev-style='normal'] #intel-hud .hud-summary {
+    max-width: 152px;
+  }
+  html[data-gev-style='normal'] #intel-hud .hud-content {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+  html[data-gev-style='normal'] #intel-hud :is(.hud-top-left, .hud-top-right) {
+    top: calc(var(--experience-header-height) + 116px);
+  }
+}
+
+@media (max-width: 440px) {
+  .experience-clock {
+    font-size: 8px;
+  }
+  .experience-mode-count {
+    display: none;
+  }
+  #left-panel-stack {
+    width: calc(100vw - 28px);
+  }
+  #right-context-rail {
+    width: calc(100vw - 28px);
+    pointer-events: none;
+  }
+  #left-panel-stack > [data-panel-id]:not(.collapsed),
+  #right-context-rail > [data-panel-id]:not(.collapsed) {
+    width: min(330px, calc(100vw - 28px));
+  }
+  .first-run-choices strong {
+    font-size: 11px;
+  }
+  .first-run-choices small {
+    font-size: 10px;
+  }
+}
+
+@media (max-height: 620px) {
+  #first-run-launcher {
+    top: 50%;
+    padding: 18px 22px;
+    max-height: calc(100dvh - 30px);
+  }
+  #first-run-launcher h2 {
+    margin-top: 10px;
+    font-size: 28px;
+  }
+  #first-run-description {
+    margin-top: 8px;
+  }
+  .first-run-choices {
+    margin-top: 14px;
+  }
+  .first-run-footer {
+    padding-top: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-header *,
+  #first-run-launcher,
+  #first-run-launcher *,
+  #key-setup,
+  #key-setup *,
+  #command-dock *,
+  #left-panel-stack *,
+  #right-context-rail *,
+  #top-center-actions *,
+  #loading-screen,
+  #loading-screen * {
+    animation: none !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Conflict analysis is a separate workspace. These are existing mounted
+ * instruments, so their disclosures, selections, and feed state survive the
+ * return to Explore. display:none also removes inactive controls from Tab.
+ */
+body.conflict-mode-active
+  :is(
+    #left-panel-stack,
+    #right-context-rail,
+    #command-dock,
+    #intel-hud,
+    #location-bar,
+    #control-panel,
+    #gev-voice-control,
+    #key-setup-chip,
+    #key-setup,
+    #style-indicator,
+    #first-run-launcher,
+    #data-panel,
+    #scene-panel,
+    #cctv-panel,
+    #pp-toggles,
+    #global-context-panel,
+    #radio-panel,
+    #param-slider-panel,
+    #view-switcher,
+    #traffic-sync-chip,
+    #cctv-sync-chip
+  ) {
+  display: none !important;
+}
+body.conflict-mode-active:not(.cockpit-mode) #top-center-actions {
+  top: auto;
+  bottom: 24px;
+  left: auto;
+  right: var(--experience-gutter);
+  transform: none;
+}
+
+/* Center the introduction in the content viewport, never across navigation. */
+#first-run-launcher {
+  top: calc(
+    var(--experience-header-height) +
+      (100dvh - var(--experience-header-height)) / 2
+  );
+  max-height: calc(100dvh - var(--experience-header-height) - 40px);
+}
+#first-run-launcher.visible {
+  transform: translate(-50%, -50%);
+}
+@media (max-height: 740px) {
+  #first-run-launcher {
+    padding: 18px 23px;
+  }
+  #first-run-launcher h2 {
+    margin-top: 10px;
+    font-size: 32px;
+  }
+  #first-run-description {
+    margin-top: 8px;
+    line-height: 1.55;
+  }
+  .first-run-choices {
+    margin-top: 14px;
+  }
+  .first-run-choices button,
+  .first-run-choices button.first-run-explore {
+    min-height: 54px;
+    padding-block: 9px;
+  }
+  .first-run-footer {
+    padding-top: 10px;
+    margin-top: 6px;
+  }
+}
+@media (max-width: 760px) {
+  body.conflict-mode-active:not(.cockpit-mode) #top-center-actions {
+    top: calc(var(--experience-header-height) + 56px);
+    bottom: auto;
+    right: 14px;
+  }
+  body.conflict-mode-active:has(.conflict-tracker.has-sitrep)
+    #top-center-actions {
+    display: none;
+  }
+}
+
+/* Below the legacy full-width rail breakpoint, each rail owns one vertical
+ * half. Retaining that split prevents Display from painting over Data Layers
+ * and makes every focused feed control both visible and directly operable.
+ */
+@media (max-width: 720px) {
+  #right-context-rail {
+    top: calc(50vh + 8px);
+  }
+}
+
+/* Flight deck: floating navigation, optical glass, and a generous type scale.
+ * The geometry above remains the contract for all original instruments.
+ */
+.experience-header {
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  min-height: 64px;
+  height: 64px;
+  padding: 0 22px;
+  background: rgba(15, 19, 25, 0.78);
+  border: 1px solid rgba(225, 232, 245, 0.14);
+  border-radius: 20px;
+  box-shadow:
+    0 12px 36px #0005,
+    inset 0 1px 0 #ffffff06;
+  backdrop-filter: blur(28px) saturate(1.15);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15);
+}
+.experience-brand-name,
+.experience-brand strong {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+}
+.experience-brand-eyebrow,
+.experience-brand small {
+  margin-top: 4px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  text-transform: none;
+}
+.experience-brand > img {
+  width: 29px;
+  height: 29px;
+  flex-basis: 29px;
+}
+.experience-mode-nav {
+  align-self: center;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(225, 232, 245, 0.07);
+  border-radius: 14px;
+  background: rgba(1, 4, 9, 0.38);
+}
+.experience-mode-nav button {
+  min-height: 36px;
+  padding: 0 15px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.experience-mode-nav button::after {
+  content: none;
+}
+.experience-mode-nav
+  button:is(.active, [aria-selected='true'], [aria-pressed='true']) {
+  color: #f6f8ff;
+  background: rgba(225, 236, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 #ffffff0f,
+    0 2px 8px #0003;
+}
+.experience-mode-nav button:hover {
+  background: rgba(225, 236, 255, 0.06);
+}
+.experience-status {
+  color: #8994a5;
+  font-size: 9px;
+  letter-spacing: 0.6px;
+}
+.experience-status-dot {
+  width: 5px;
+  height: 5px;
+  background: #a8d8ff;
+  box-shadow: 0 0 8px #a8d8ff33;
+}
+.experience-clock {
+  font-variant-numeric: tabular-nums;
+  color: #d7deea;
+}
+
+:is(
+  .panel-inner,
+  .data-panel-inner,
+  .cctv-panel-inner,
+  .scene-panel-inner,
+  .global-context-panel-inner,
+  .location-inner
+) {
+  background: linear-gradient(
+    150deg,
+    rgba(29, 35, 44, 0.88),
+    rgba(13, 17, 23, 0.94)
+  );
+  border-color: rgba(220, 230, 250, 0.13);
+  border-radius: 18px;
+  box-shadow:
+    0 12px 30px #0003,
+    inset 0 1px 0 #ffffff05;
+  backdrop-filter: blur(24px) saturate(1.1);
+  -webkit-backdrop-filter: blur(24px) saturate(1.1);
+}
+.panel-title,
+:is(#data-panel, #cctv-panel, #scene-panel, #global-context-panel).collapsed
+  .panel-title,
+.pp-header-label,
+#left-panel-stack .panel-title,
+#right-context-rail .panel-title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: #c7ced9;
+}
+.panel-collapse-btn {
+  color: #c8d1df;
+  border-radius: 8px;
+}
+.panel-collapse-btn:hover {
+  background: #ffffff0a;
+}
+.panel-divider {
+  opacity: 0.6;
+}
+.data-toggle-row {
+  padding-block: 12px;
+}
+.data-name {
+  font-size: 12px;
+}
+.data-toggle-meta {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.1px;
+  color: #8e99ab;
+}
+.data-toggle-btn {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  border-radius: 7px;
+}
+.data-count {
+  font-size: 10px;
+  color: #a8b5c8;
+}
+.pp-toggle-btn,
+.context-mode-button,
+.panel-layer-toggle,
+.scene-btn {
+  border-radius: 8px;
+}
+.pp-label {
+  font: 11px var(--font-sans);
+  letter-spacing: 0.15px;
+}
+.pp-toggle-btn.active {
+  color: #dcecff;
+  border-color: #a8d8ff33;
+  background: #a8d8ff14;
+  box-shadow: none;
+}
+.pp-mode-btn.active {
+  color: #08111a;
+  background: #b7daf5;
+  border-color: #b7daf5;
+  box-shadow: none;
+}
+#top-center-actions,
+body:not(.cockpit-mode) #top-center-actions {
+  border-radius: 13px;
+  background: rgba(23, 29, 38, 0.86);
+  box-shadow: 0 8px 22px #0003;
+}
+#top-center-actions button {
+  border-radius: 9px;
+}
+#top-center-actions button + button {
+  border-left-color: rgba(220, 230, 250, 0.1);
+}
+#command-dock > :is(#location-bar, #control-panel) {
+  border-color: #d8e6ff1c;
+  background: rgba(21, 27, 36, 0.85);
+}
+#command-dock #location-bar .location-toolbar-label,
+#command-dock #control-panel .panel-title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  color: #cbd5e5;
+}
+#command-dock .dock-popover-content {
+  border-radius: 18px;
+  border-color: #d8e6ff24;
+  background: rgba(19, 25, 34, 0.97);
+}
+#command-dock .style-btn {
+  border-radius: 10px;
+}
+#command-dock #gev-voice-control {
+  background: rgba(22, 31, 43, 0.93);
+  border-color: #a8d8ff38;
+  box-shadow: 0 8px 24px #0003;
+  border-radius: 16px;
+}
+#command-dock .gev-voice-visualizer {
+  border-color: #a8d8ff22;
+}
+#command-dock .gev-voice-visualizer span {
+  background: #a8d8ff;
+  box-shadow: none;
+}
+#command-dock #gev-voice-status {
+  color: #a8d8ff;
+}
+.location-pill,
+.poi-pill {
+  border-radius: 8px;
+}
+.style-btn.active {
+  color: #ecf7ff;
+  border-color: #a8d8ff66;
+}
+#key-setup-chip {
+  border-radius: 12px;
+  background: rgba(21, 27, 36, 0.9);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.2px;
+}
+#key-setup {
+  border-radius: 22px;
+  background: rgba(18, 24, 33, 0.97);
+}
+#key-setup h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -1.3px;
+}
+
+/* A mission console anchored beside the Earth, not across its center. */
+#first-run-launcher {
+  top: 140px;
+  left: 48px;
+  width: 390px;
+  max-height: calc(100dvh - 166px);
+  padding: 28px;
+  border: 1px solid rgba(224, 234, 255, 0.16);
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    rgba(29, 36, 48, 0.94),
+    rgba(12, 17, 25, 0.94)
+  );
+  box-shadow:
+    0 30px 90px #0007,
+    inset 0 1px 0 #ffffff09;
+  backdrop-filter: blur(28px) saturate(1.05);
+  -webkit-backdrop-filter: blur(28px) saturate(1.05);
+  transform: translateY(12px);
+}
+#first-run-launcher.visible {
+  transform: none;
+}
+.first-run-scanline {
+  display: none;
+}
+.first-run-kicker {
+  font: 10px var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 1.1px;
+  color: #a4b8d0;
+}
+#first-run-launcher h2 {
+  margin-top: 16px;
+  max-width: 300px;
+  font-family: var(--font-sans);
+  font-size: 43px;
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -2.1px;
+  color: #f6f8fc;
+}
+#first-run-description {
+  margin-top: 16px;
+  font: 13px/1.6 var(--font-sans);
+  letter-spacing: -0.12px;
+  color: #a0aec1;
+}
+.first-run-choices {
+  gap: 6px;
+  margin-top: 24px;
+  padding: 2px;
+}
+.first-run-choices button,
+.first-run-choices button.first-run-explore {
+  min-height: 65px;
+  padding: 12px 10px;
+  gap: 12px;
+  border: 1px solid rgba(224, 234, 255, 0.07);
+  border-radius: 12px;
+  background: rgba(217, 231, 255, 0.03);
+}
+.first-run-choices button:hover,
+.first-run-choices button:focus-visible {
+  border-color: rgba(168, 216, 255, 0.25);
+  background: rgba(168, 216, 255, 0.08);
+}
+.first-run-choices button > .material-symbols-outlined:first-child {
+  font-size: 20px;
+  color: #cee5ff;
+}
+.first-run-choices strong {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+.first-run-choices small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #94a4bc;
+}
+.first-run-arrow {
+  font-size: 16px;
+  color: #8394ab;
+}
+.first-run-footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-color: #e0eaff12;
+}
+.first-run-suppress {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: #98a7bb;
+}
+.first-run-note {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1.55;
+  color: #8292aa;
+}
+.loader-content h2 {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -1px;
+}
+.loader-logo {
+  width: 60px;
+}
+
+@media (min-width: 761px) and (max-height: 800px) {
+  #first-run-launcher {
+    top: 112px;
+    max-height: calc(100dvh - 132px);
+    padding: 22px;
+  }
+  #first-run-launcher h2 {
+    margin-top: 12px;
+    font-size: 37px;
+    letter-spacing: -1.6px;
+  }
+  #first-run-description {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+  .first-run-choices {
+    margin-top: 16px;
+    gap: 5px;
+  }
+  .first-run-choices button,
+  .first-run-choices button.first-run-explore {
+    min-height: 56px;
+    padding: 9px 10px;
+  }
+  .first-run-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .experience-header {
+    grid-template-columns: 1fr auto 1fr;
+    padding-inline: 18px;
+    gap: 15px;
+  }
+  .experience-brand-name {
+    font-size: 14px;
+  }
+  .experience-brand-eyebrow {
+    font-size: 9px;
+  }
+  .experience-mode-nav button {
+    padding-inline: 11px;
+  }
+  #first-run-launcher {
+    left: 28px;
+    width: 365px;
+  }
+}
+@media (max-width: 760px) {
+  :root {
+    --experience-header-height: 116px;
+  }
+  .experience-header {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    height: 106px;
+    min-height: 106px;
+    grid-template-rows: 53px 45px;
+    padding: 0 13px 8px;
+    border-radius: 20px;
+  }
+  .experience-brand-name,
+  .experience-brand strong {
+    font-size: 14px;
+  }
+  .experience-brand-eyebrow,
+  .experience-brand small {
+    font-size: 9px;
+  }
+  .experience-mode-nav {
+    justify-self: stretch;
+    justify-content: center;
+    padding: 3px;
+    gap: 3px;
+    border-radius: 12px;
+  }
+  .experience-mode-nav button {
+    flex: 1;
+    min-height: 32px;
+    padding-inline: 10px;
+    font-size: 12px;
+    border-radius: 9px;
+  }
+  .experience-status {
+    font-size: 8px;
+    gap: 6px;
+  }
+  .experience-clock {
+    font-size: 8px;
+  }
+  #first-run-launcher {
+    top: auto;
+    bottom: max(56px, calc(env(safe-area-inset-bottom) + 38px));
+    left: 14px;
+    width: calc(100vw - 28px);
+    max-height: calc(100dvh - var(--experience-header-height) - 82px);
+    padding: 24px;
+    border-radius: 24px;
+    transform: translateY(12px);
+  }
+  #first-run-launcher.visible {
+    transform: none;
+  }
+  #first-run-launcher h2 {
+    max-width: 330px;
+    font-size: 38px;
+    letter-spacing: -1.7px;
+  }
+  #first-run-description {
+    max-width: 360px;
+    margin-top: 12px;
+    font-size: 12px;
+  }
+  .first-run-choices {
+    margin-top: 18px;
+    gap: 5px;
+  }
+  .first-run-choices button,
+  .first-run-choices button.first-run-explore {
+    min-height: 57px;
+    padding: 9px 10px;
+  }
+  .first-run-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .experience-header {
+    padding-inline: 11px;
+  }
+  .experience-brand {
+    gap: 7px;
+  }
+  .experience-brand > img {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+  }
+  .experience-brand-name {
+    font-size: 12px;
+  }
+  .experience-brand-eyebrow {
+    font-size: 8px;
+  }
+  .experience-status-dot {
+    display: none;
+  }
+  #first-run-launcher {
+    padding: 20px;
+  }
+  #first-run-launcher h2 {
+    font-size: 34px;
+  }
+}
+
+/* The introduction owns attention until a mission or a navigation action is
+ * chosen. Mounted instrument state remains intact beneath this reversible view.
+ */
+body:has(#first-run-launcher.visible:not([hidden]))
+  :is(
+    #left-panel-stack,
+    #right-context-rail,
+    #intel-hud,
+    #command-dock,
+    #gev-voice-control,
+    #key-setup-chip,
+    #style-indicator,
+    #top-center-actions
+  ) {
+  display: none !important;
+}
+.experience-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+.experience-search-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 11px;
+  color: #b9c5d8;
+  background: rgba(225, 236, 255, 0.035);
+  border: 1px solid rgba(225, 236, 255, 0.09);
+  border-radius: 10px;
+  font: 11px var(--font-sans);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.experience-search-trigger:hover {
+  color: #f1f6ff;
+  border-color: #a8d8ff40;
+  background: #a8d8ff0d;
+}
+.experience-search-trigger .material-symbols-outlined {
+  font-size: 16px;
+}
+.experience-search-trigger kbd {
+  margin-left: 6px;
+  color: #8090a9;
+  font: 10px var(--font-sans);
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .experience-navigation {
+    gap: 8px;
+  }
+  .experience-search-trigger {
+    width: 36px;
+    padding: 0;
+  }
+  .experience-search-trigger > :not(.material-symbols-outlined) {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .experience-navigation {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    align-self: stretch;
+    gap: 8px;
+  }
+  .experience-navigation .experience-mode-nav {
+    flex: 1;
+    min-width: 0;
+  }
+  .experience-search-trigger {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+  }
+  .experience-search-trigger > :not(.material-symbols-outlined) {
+    display: none;
+  }
+  /* The normal mobile attribution anchor clears the voice dock. During the
+   * introduction that dock is absent, so credits belong in the reserved footer
+   * instead of behind the mission sheet. */
+  body:has(#first-run-launcher.visible:not([hidden])) #cesium-credits {
+    bottom: max(14px, env(safe-area-inset-bottom)) !important;
+    left: 14px;
+  }
+}
