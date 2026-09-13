@@ -58,6 +58,8 @@ Start with the included data sources, then add your own. Each layer is a separat
 
 ## 🎛️ What This Thing Does
 
+- **Conflict Tracker:** An additional globe mode with 28 curated worldwide briefings. Select a map location or search the directory to open a dated, source-linked SITREP with conflict background, key actors and humanitarian context. Includes keyboard navigation, mobile reports and a briefing fallback when the globe cannot start. [Coverage and methodology](docs/CONFLICT-DATA.md).
+- **Observatory interface:** Refined navigation, typography and responsive panels, with the existing tracking, live layers, visual presets, scenes and voice tools available in Explore.
 - **🛩️ Cockpit view:** Ride inside a tracked flight — the camera holds the terrain under you all the way down.
 - **📡 Contacts:** A 250 km roster of everything near your target — step through live aircraft and drop into any cockpit.
 - **🎯 Click-to-track anything:** Camera locks on, draws a fading trail, surfaces full metadata — and a tracked fire or vessel hands you off to the nearest live camera in one click.

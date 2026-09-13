@@ -1091,6 +1091,13 @@ export class SceneDirector {
     this._logEvent('scene_stopped', { reason });
   }
 
+  /** Yield camera authority, including a shot still awaiting provider data. */
+  interrupt(reason = 'Navigation changed') {
+    this.stopScene(reason);
+    this._loadAbort?.abort();
+    this._loadGeneration++;
+  }
+
   /** Export the entire project as a timestamped JSON file download. */
   exportProject() {
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');

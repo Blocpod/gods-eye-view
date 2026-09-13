@@ -277,6 +277,7 @@ const COCKPIT_BRIEF_PAGES = [
  * intersect it at the current viewport size.
  */
 const LEFT_STACK_OBSTACLE_SELECTOR = [
+  '.experience-header',
   '#cockpit-hud .cockpit-topline',
   '#cockpit-hud .cockpit-topline > div',
   '#title-bar',
@@ -328,6 +329,7 @@ function isRenderedOnScreen(element) {
  * visible without tying the layout to one screen height.
  */
 const RIGHT_STACK_OBSTACLE_SELECTOR = [
+  '.experience-header',
   '#cockpit-hud .cockpit-topline',
   '#cockpit-hud .cockpit-topline > div',
   '#title-bar',

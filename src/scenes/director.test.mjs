@@ -645,3 +645,21 @@ test('destroy drains cancelled LOAD work before its viewer can be discarded', as
   assert.equal((await director.startScene('scene-1')).reason, 'destroyed');
   await director.destroy();
 });
+
+test('explicit mode navigation cancels a pending shot before it can move the camera', async () => {
+  const { director, styleManager, dataManager, viewer, restore } = makeDirector();
+  let finishVisual;
+  styleManager.applyVisualState = () => new Promise((resolve) => { finishVisual = resolve; });
+  try {
+    const loading = director.loadShot('scene-1', 'shot-a');
+    await settle();
+    director.interrupt('Conflict Tracker opened');
+    finishVisual();
+    await loading;
+    assert.equal(dataManager.setEnabledCalls.length, 0);
+    assert.equal(viewer.flights.length, 0);
+    assert.equal(director._loadAbort.signal.aborted, true);
+  } finally {
+    restore();
+  }
+});

@@ -6,6 +6,7 @@
   <title>God's Eye View</title>
   <link rel="icon" type="image/svg+xml" href="/logo.svg" />
   <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/src/styles/experience.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -13,6 +14,17 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
 </head>
 <body>
+  <header class="experience-header">
+    <a class="experience-brand" href="#" aria-label="God's Eye View — explore the globe">
+      <img src="/logo.svg" width="34" height="34" alt="" />
+      <span><span class="experience-brand-name">GOD'S EYE VIEW</span><span class="experience-brand-eyebrow">A broader perspective.</span></span>
+    </a>
+    <nav class="experience-mode-nav" aria-label="Intelligence modes">
+      <button type="button" data-mode="explore" aria-pressed="true" disabled><span class="material-symbols-outlined" aria-hidden="true">public</span>Explore</button>
+      <button type="button" data-mode="conflicts" aria-pressed="false" disabled><span class="material-symbols-outlined" aria-hidden="true">crisis_alert</span>Conflict Tracker</button>
+    </nav>
+    <div class="experience-status"><span class="experience-status-dot" aria-hidden="true"></span><span class="experience-status-label">PUBLIC INTELLIGENCE</span><time class="experience-clock" aria-label="Current UTC time">--:-- UTC</time></div>
+  </header>
   <div id="cesiumContainer"></div>
   <div id="world-overlay-root" aria-hidden="true">
     <canvas id="world-overlay-canvas"></canvas>
@@ -848,6 +860,11 @@
          public → the data is real. Tile subcopy stays purely functional. -->
     <p id="first-run-description">It feels like a forbidden cockpit—then you realize the sources are public and the data is real.</p>
     <div class="first-run-choices">
+      <button type="button" data-experience-conflicts>
+        <span class="material-symbols-outlined" aria-hidden="true">crisis_alert</span>
+        <span><strong>CONFLICT TRACKER</strong><small>Explore conflict zones and sourced situation reports</small></span>
+        <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
+      </button>
       <button type="button" data-first-run-choice="contacts">
         <span class="material-symbols-outlined" aria-hidden="true">radar</span>
         <span><strong>LIVE CONTACTS</strong><small>Aircraft, vessels and nearby intelligence</small></span>
