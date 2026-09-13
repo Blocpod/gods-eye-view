@@ -13,6 +13,7 @@ import { startStandaloneChrome } from './startupChrome.js';
 import { createConflictTracker } from '../conflicts/conflictTracker.js';
 import { createExperienceShell } from '../ui/experienceShell.js';
 import { createCommandPalette } from '../ui/commandPalette.js';
+import { installSolarRefresh } from './solarRefresh.js';
 
 /** Attach scene tools, rendering listeners and the standalone debug handle. */
 export function createStandaloneTools({
@@ -57,6 +58,7 @@ export function createStandaloneTools({
   // nothing animates per frame. Installed AFTER every module above has had
   // its chance to register pre-install holds. (perf wave 2)
   installRenderGovernor(viewer);
+  defer(installSolarRefresh({ viewer, documentRef: document }));
 
   // Install the explicit scope mask used by the DISPLAY controls.
   installScopeMask(viewer);
